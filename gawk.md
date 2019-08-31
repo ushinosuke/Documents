@@ -1,4 +1,4 @@
-## AWK
+## AWK & GNU awk
 
 ### 重要コマンド
 * 表示範囲の指定（行）
@@ -105,6 +105,19 @@ echo $pi
 	    }
 	}
 	```
+	5. 多次元配列　#gawk
+	```
+	BEGIN{
+	    a[1][1] = 300;
+	    a[2]["Apple"] = 500;
+	    a[2][1,2] = 700;
+      for(i in a){
+          for(j in a[i])[
+              print i,j,a[i][j];
+          }
+      }
+	}
+	```
 * 重複行の除去： `echo -e "aaa¥nbbb¥naaa"|sort|uniq`代替
 `echo -e "aaa¥nbbb¥naaa"|awk '!(a[$0])++'`
 * 双方向パイプ  #gawk
@@ -129,4 +142,18 @@ echo $pi
 		    print str;
 		}
 	```
-
+* セル内にカンマがあるCSVファイル　#gawk
+	1. FPATでフィールドそのもののパターンを定義
+	`echo 'aaa,"bbb,ccc",ddd'|awk -v FPAT='([^,]+)|(¥"[^¥"]+¥")' '$0=$2'`
+	2. patsplit関数を使う
+	`echo 'aaa,"bbb,ccc",ddd'|awk '{patsplit($0,arr,"([^,]+)|(¥"[^¥"]+¥")")};print arr[2]'`
+* ファイル有無のチェック
+	```
+	BEGINFILE{
+	    if(ERRNO){
+	        print "File does not exist.";
+	    }
+	    exit;
+	}
+	```
+* Indirect function call
