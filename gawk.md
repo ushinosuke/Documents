@@ -58,8 +58,10 @@ echo $pi
 	* match関数の活用
 		`echo {a..e}|tr -d ' '|awk 'match($0,/b.*/){print substr($0,RSTART,RLENGTH)}'`
 * 文字列置換
-	1. `echo {a..e}|tr -d ' '|awk 'sub(/./,"A")'`
-	2. `echo {a..e}|tr -d ' '|awk 'gsub(/./,"A")'`
+	1. `echo {a..e}|tr -d ' '|awk 'sub(/./,"A")'`　or
+		 `echo {a..e}|awk 'sub('  *',"")'|awk 'sub(/./,"A")'`
+	2. `echo {a..e}|tr -d ' '|awk 'gsub(/./,"A")'`　or
+		 `echo {a..e}|awk 'sub('  *',"")'|awk 'gsub(/./,"A")'`
 	3. `echo 'sumomomomonouti'|awk '{print gensub(/m/,"M","g",$0);print}'` #gawk
 	4. 後方参照（back reference）
 		`echo 'sumomomomomonouti'|awk '{print gensub(/(mo)(no)/,"¥¥1¥"¥¥2¥"","g",$0)}'` #gawk
@@ -126,21 +128,21 @@ echo $pi
 * 双方向パイプ  #gawk
 		```
 		BEGIN{
-		    cmd = sort;
+		    cmd=sort;
 		}
 		
 		{
-		    for (i = 1; i <= NF; i++) {
+		    for(i=1;i<=NF;i++){
 		        print $i |& cmd;
 		    }
-		    close(cmd, "to");
+		    close(cmd,"to");
 		    
-		    str = "";
-		    while (cmd |& getline > 0) {
-		        str = str OFS $0;
+		    str="";
+		    while(cmd |& getline>0){
+		        str=str OFS $0;
 		    }
 		    close(cmd);
-		    sub(/^[ ]/, "", str);
+		    sub(/^[ ]/,"",str);
 		    
 		    print str;
 		}
@@ -148,7 +150,7 @@ echo $pi
 * セル内にカンマがあるCSVファイル　#gawk
 	1. FPATでフィールドそのもののパターンを定義
 	`echo 'aaa,"bbb,ccc",ddd'|awk -v FPAT='([^,]+)|(¥"[^¥"]+¥")' '$0=$2'`
-	2. patsplit関数を使う
+	2. patsplit関数を使う　*c.f.* `split`と同じく、戻り値は配列の大きさ
 	`echo 'aaa,"bbb,ccc",ddd'|awk '{patsplit($0,arr,"([^,]+)|(¥"[^¥"]+¥")")};print arr[2]'`
 * ファイル有無のチェック　#gawk
 	```
@@ -160,3 +162,21 @@ echo $pi
 	}
 	```
 * Indirect function call
+以下のone linerの代替として、IFCを活用した例を示す。
+`echo -e '1 2 sum¥n3 4 avg'|awk '{print ($NF=="sum")?$1+$2:($1+$2)/2}'`
+```
+{
+    var="$NF";
+    print @var($1,$2);
+}
+
+function sum(n1,n2){
+    return n1+n2;
+}
+
+function avg(n1,n2){
+    return (n1+n2)/2;
+}
+```
+`echo -e '1 2 sum¥n3 4 avg'|awk -f tmp.awk`
+
