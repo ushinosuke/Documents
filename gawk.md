@@ -3,7 +3,10 @@
 ### 重要コマンド
 * 表示範囲の指定（行）
 	* 先頭行から空行までを標準出力
-		`top -l 1|awk 'NR==0,/^$/'`
+		```
+		top -l 1|awk 'NR==1,/^$/'
+		top -l 1|awk 'NR==1,!NF'
+		```
 	* 空行から行末までを標準出力
 		`top -l 1|awk '/^$/,0'`
 * `bc`コマンド代替： `echo {1..5}|tr ' ' '+'|bc`
@@ -147,7 +150,7 @@ echo $pi
 	`echo 'aaa,"bbb,ccc",ddd'|awk -v FPAT='([^,]+)|(¥"[^¥"]+¥")' '$0=$2'`
 	2. patsplit関数を使う
 	`echo 'aaa,"bbb,ccc",ddd'|awk '{patsplit($0,arr,"([^,]+)|(¥"[^¥"]+¥")")};print arr[2]'`
-* ファイル有無のチェック
+* ファイル有無のチェック　#gawk
 	```
 	BEGINFILE{
 	    if(ERRNO){
