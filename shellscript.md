@@ -1,7 +1,7 @@
 ## シェルレシピ
 
 ### 基本的な作業
-本レシピはシバンを`#!/bin/sh`に設定していることを想定している。
+本レシピはシバンを`#!/bin/sh`に設定することを想定している。
 
 #### Recipe 1.1 C言語の様な`for`ループ
 CやAWKの様に、開始番号、終了番号、増分を指定して`for`ループを回すことはできない。shellの`for`文はperlでいう`foreach`文に相当する。しょうがないので、素直に`while`文を使う。以下は、初期番号10、終了番号30、増分5の例を示す。
@@ -35,13 +35,83 @@ for i in `yes ""|cat -n|head -30|awk 'NR>=10&&NR%5==0{print}'`; do
     echo $i
 done
 ```
+
 #### Recipe1.3 セキュリティ・ホールを防ぐ文字列評価
 `if`文を使って直感的に文字列評価すると、稀にエラーを返されることがある。不測の事態を回避するにはターゲット文字列の前に任意の英数字を付与すればよい。以下は第一引数がshellかどうかを評価する例。
-
 ```shell
 if [ "_$1" = "_shell" ]; then
     echo "You're a shell aficionado !"
 fi
 ```
-
 上のスニペットのアンダースコア`_`を消去して、ターミナルで`./test.sh "!"`と実行すると、OSによりエラーを返されることがある。この様な誤動作は最悪の場合、セキュリティ・ホールを誘発する恐れがあるので注意。
+
+#### Recipe1.4 インタラクティブな入力受け付け
+コマンド引数ではなく標準入力から情報を受ける対話的インタフェースを作るには、`while`文と`read`の組み合わせを用いればよい。入力が適切でない場合に`while`文から抜け出せない様にする。`while`文と`read`のコンビネーションんは定石。
+* 数字を選択する場合
+```shell
+check=""
+while [ -z "$check" ]; do
+    echo "Enter your cat's name"
+    echo "   1) p-man"
+    echo "   2) ushinosuke"
+    echo "   3) komegoro"
+    read check
+    case $check in
+        1)
+            echo "DEBUNESU !"
+            ;;
+        2)
+            echo "Hiyokko-taiyo"
+            ;;
+        3)
+            echo "He's Torajiro"
+            ;;
+        *)
+            echo "**** Bad choice !"
+            printf '¥007'
+            check=""
+            ;;
+    esac
+done
+```
+* 「はい」または「いいえ」を選択する場合
+```shell
+check=""
+while [ -z "$check" ]; do
+    echo -n "Do you like bretzel (Y/N) ? "
+    read check
+    case $check in
+        [Yy]*)
+            check="YES"
+            ;;
+        [Nn]*)
+            check="NO"
+            ;;
+        *)
+            echo '*** Answer either "Yes" or "No" !'
+            printf '¥007'
+            check=""
+            ;;
+    esac
+done
+```
+* 一時停止
+```shell
+check=""
+echo -n "Type the return key when ready : "
+read check
+```
+Mac（FreeBSD）では、Bourne Shellは`echo`に`-n`オプションをサポートしていないことに注意。
+
+#### Recipe1.5 標準エラー出力の扱い方
+標準エラー出力は`2>`でリダイレクトできる。標準エラーの出力先`2`に標準出力の出力先`1`をコピーするには,
+
+`2>&1`とすればよい。
+
+* 標準エラー出力をビットバケツに捨てる場合（tmp.txtが存在しない状況を想定）
+`rm tmp.txt 2>/dev/null`
+* 標準エラー出力を、次のコマンドにパイプで渡す場合
+`rm tmp.txt 2>&1|awk 'sub(/No/,"NO")'`
+* 標準出力も標準エラー出力の結果もビットバケツに捨てる場合
+`rm tmp.txt >/dev/null 2>&1`
+
