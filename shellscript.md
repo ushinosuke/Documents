@@ -173,3 +173,32 @@ fi
 ```
 
 #### Recipe2.4 子プロセスへ変数を渡す
+親プロセスで用いた変数を子プロセスに渡したいときは、子プロセスを起動する前に`export`コマンドを使えばよい。
+* 親スクリプト
+```shell
+local="gorin"
+global="debunesu"
+
+export global
+
+./child.sh
+
+echo " local@parent   : $local"
+echo " global@parent  : $global"
+```
+* 子スクリプト
+```shell
+echo "start $0"
+
+echo " local@child  : $local"
+echo " global@child : $global"
+
+local="ushinosuke"
+global="tora"
+
+export global
+echo "end $0"
+```
+
+#### Recipe2.5 子プロセスから親プロセスへ変数を渡す
+
