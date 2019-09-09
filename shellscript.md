@@ -161,3 +161,15 @@ unset ushinosuke
 declare|grep ushinosuke
 ```
 
+#### Recipe2.3 変数が未定義か判別する
+変数名の後にハイフン＋メッセージをつける。例えば変数`var`が未定義かどうか確かめたいならば、`${var-UNDEF}`などとすればよい。
+```shell
+defined="YES"
+if [ "${var-UNDEF}" = "UNDEF" ]; then
+    if [ -z "$var" ]; then
+        defined="NO"
+    fi
+fi
+```
+
+#### Recipe2.4 子プロセスへ変数を渡す
