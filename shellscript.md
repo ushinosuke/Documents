@@ -98,7 +98,7 @@ done
 * 一時停止
 ```shell
 check=""
-echo -n "Type the return key when ready : "
+echo -n "Press the return key when ready : "
 read check
 ```
 Mac（FreeBSD）では、Bourne Shellは`echo`に`-n`オプションをサポートしていないことに注意。
@@ -114,4 +114,14 @@ Mac（FreeBSD）では、Bourne Shellは`echo`に`-n`オプションをサポー
 `rm tmp.txt 2>&1|awk 'sub(/No/,"NO")'`
 * 標準出力も標準エラー出力の結果もビットバケツに捨てる場合
 `rm tmp.txt >/dev/null 2>&1`
+
+#### Recipe1.6 標準エラー出力にメッセージを送る
+特殊ファイルの`/dev/stderr`にリダイレクトすればよい。
+`echo "*** ERROR ***" >/dev/stderr`
+
+---
+
+### 変数操作
+
+#### Recipe2.1 
 
