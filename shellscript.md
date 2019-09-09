@@ -151,3 +151,13 @@ readonly var=100
 var=10
 ```
 
+#### Recipe2.2 変数の解除（未定義化）
+変数の解除（未定義化）とは、変数にヌル値を代入するのではなく、変数そのものが無かったことにする操作である。解除するには`unset`コマンドを使う。
+```shell
+ushinosuke=0313
+declare|grep ushinosuke
+
+unset ushinosuke
+declare|grep ushinosuke
+```
+
