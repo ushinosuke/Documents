@@ -123,6 +123,42 @@ Mac（FreeBSD）では、Bourne Shellは`echo`に`-n`オプションをサポー
 
 ### 変数操作
 
+#### Recipe2.0 変数の初期設定
+以下の４つの設定方法を使うと、変数が定義済みか未定義かで振る舞いが変わる。
+1. `=`による変数の設定
+`${variable:=value}` これまで未使用かヌル値であればvalueを使う。
+`${variable=value}` これまで未使用であればvalueを使う。ヌル値が入っていればヌル値を使う。
+```shell
+echo ${ABC:=xyz}   # xyz
+echo $ABC          # xyz
+echo ${ABC:=abc}   # xyz
+ABC=""
+echo ${ABC=123}    # null
+echo ${ABC:=123}   # 123
+```
+2. `-`による変数の設定
+`${variable:-value}` 変数がこれまで未使用・未定義のときに値を**代入しないまま**、指定した値を返す。
+```shell
+echo {ABC:-xyz}    # xyz
+echo $ABC          # null
+echo {ABC:=abc}    # abc
+echo $ABC          # abc
+```
+3. `?`による変数の設定
+`${variable:?msg}` 変数が未使用・未定義であるか確認する。未使用・未定義の場合はmsg部分が表示される。
+```shell
+echo ${ABC:?"ABC is not set"}
+```
+4. `+`による変数の設定
+`${variable:+value}`変数が定義済みのとき、値を取り替えて表示する。ただし実際の変数の値は変わらない。
+```shell
+echo ${ABC:+zzz}    # null
+ABC=www
+echo $ABC           # www
+echo ${ABC:+zzz}    # zzz
+echo $ABC           # www
+```
+
 #### Recipe2.1 変数のチェック
 未定義の変数へのアクセスや変数のスコープ、`Fortran`でいう`parameter`属性をシェルでも適用できる。
 1. 未定義の変数へのアクセス制御
@@ -172,7 +208,7 @@ if [ "${var-UNDEF}" = "UNDEF" ]; then
 fi
 ```
 
-#### Recipe2.4 子プロセスへ変数を渡す
+#### Recipe2.4 親プロセスから子プロセスへ変数を渡す
 親プロセスで用いた変数を子プロセスに渡したいときは、子プロセスを起動する前に`export`コマンドを使えばよい。
 * 親スクリプト
 ```shell
@@ -201,4 +237,4 @@ echo "end $0"
 ```
 
 #### Recipe2.5 子プロセスから親プロセスへ変数を渡す
-
+`export`コマンドを使っても子プロセスから親プロセスに変数を渡すことはできない。そこで、ファイルを介して渡すようにする。
