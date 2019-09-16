@@ -3,7 +3,7 @@
 ### 重要コマンド
 * 表示範囲の指定（行）
 	* 先頭行から空行までを標準出力
-		```
+		```shell
 		top -l 1|awk 'NR==1,/^$/'
 		top -l 1|awk 'NR==1,!NF'
 		```
@@ -17,7 +17,7 @@
 	1. `echo {a..e} |tr -d ' '|awk '$0=toupper($0)'`
 	2. `echo {A..E} |tr -d ' '|awk '$0=tolower($0)'`
 * piの計算
-```
+```shell
 pi=$(awk 'BEGIN{printf"%15.10f¥n",atan2(0,-0)}')
 echo $pi
 ```
@@ -41,7 +41,7 @@ echo $pi
 	* リング・バッファを活用
 			`seq 100|awk '{a[NR%10]=$0}END{for(i=1;i<=10;i++)print a[i%10]}'`
 * getlineによる標準入力の読み込み
-	```
+	```shell
 	BEGIN{
 	    while(getline<"-">0){
 	        print "NR = " ++nr;
@@ -67,7 +67,7 @@ echo $pi
 		`echo 'sumomomomomonouti'|awk '{print gensub(/(mo)(no)/,"¥¥1¥"¥¥2¥"","g",$0)}'` #gawk
 * ハッシュ（連想配列）の取り扱い
 	1. 配列の大きさ
-	```
+	```shell
 	BEGIN{
 	    fruits[1]='apple';
 	    fruits[2]='orange';
@@ -77,7 +77,7 @@ echo $pi
 	    }
 	```
 	2. ハッシュの出力順番を正す（awk版）
-	```
+	```shell
 	BEGIN{
 	    fruits_list="apple orange mikan";
 	    num_fruits=split(fruits_list, fruits);
@@ -87,7 +87,7 @@ echo $pi
 	}
 	```
 	3. ハッシュの出力順番を正す（gawk版）
-	```
+	```shell
 	BEGIN{
 	    price_of["apple"]=100;
 	    price_of["orange"]=200;;
@@ -99,7 +99,7 @@ echo $pi
 	}
 	```
 	4. 多次元配列もどき： カンマはカンマにあらず
-	```
+	```shell
 	a[1 "¥034" 1]="a";　# a[1,1]="a"に同じ
 	a[1 "¥034" 2]="b";　# a[1,2]="b"に同じ
 	a[2 "¥034" 1]="c";　# a[2,1]="c"に同じ
@@ -111,7 +111,7 @@ echo $pi
 	}
 	```
 	5. 多次元配列　#gawk
-	```
+	```shell
 	BEGIN{
 	    a[1][1] = 300;
 	    a[2]["Apple"] = 500;
@@ -126,7 +126,7 @@ echo $pi
 * 重複行の除去： `echo -e "aaa¥nbbb¥naaa"|sort|uniq`代替
 `echo -e "aaa¥nbbb¥naaa"|awk '!(a[$0])++'`
 * 双方向パイプ  #gawk
-		```
+		```shell
 		BEGIN{
 		    cmd=sort;
 		}
@@ -153,7 +153,7 @@ echo $pi
 	2. patsplit関数を使う　*c.f.* `split`と同じく、戻り値は配列の大きさ
 	`echo 'aaa,"bbb,ccc",ddd'|awk '{patsplit($0,arr,"([^,]+)|(¥"[^¥"]+¥")")};print arr[2]'`
 * ファイル有無のチェック　#gawk
-	```
+	```shell
 	BEGINFILE{
 	    if(ERRNO){
 	        print "File does not exist.";
@@ -164,7 +164,7 @@ echo $pi
 * Indirect function call
 以下のone linerの代替として、IFCを活用した例を示す。
 `echo -e '1 2 sum¥n3 4 avg'|awk '{print ($NF=="sum")?$1+$2:($1+$2)/2}'`
-```
+```shell
 {
     var="$NF";
     print @var($1,$2);
