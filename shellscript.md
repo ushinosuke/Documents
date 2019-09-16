@@ -7,7 +7,7 @@
 CやAWKの様に、開始番号、終了番号、増分を指定して`for`ループを回すことはできない。shellの`for`文はperlでいう`foreach`文に相当する。しょうがないので、素直に`while`文を使う。以下は、初期番号10、終了番号30、増分5の例を示す。
 ```shell
 i=10
-while [$i -le 30] do;
+while [ $i -le 30 ] do;
     print $i
     $i=`expr $i + 5`　# その他、``の代わりに$()にする方法や$(($i+5))と書く方法もある。
 done
@@ -206,6 +206,7 @@ if [ "${var-UNDEF}" = "UNDEF" ]; then
         defined="NO"
     fi
 fi
+echo $defined
 ```
 
 #### Recipe2.4 親プロセスから子プロセスへ変数を渡す
@@ -238,3 +239,43 @@ echo "end $0"
 
 #### Recipe2.5 子プロセスから親プロセスへ変数を渡す
 `export`コマンドを使っても子プロセスから親プロセスに変数を渡すことはできない。そこで、ファイルを介して渡すようにする。
+* 親スクリプト
+```shell
+global1="sato"
+global2="shio"
+
+export global1
+export global2
+
+temp_file=`mktemp /tmp/ONABE_GUTSUGUTSU.XXXXXX`
+export temp_file
+
+./child.sh
+
+for variable in `cat $temp_file`; do
+    eval $variable
+done
+
+rm -f $temp_file
+
+echo "  global1@parent : $global1"
+echo "  global2@parent : $global2"
+```
+* 子スクリプト
+```shell
+echo "start $0"
+
+echo "  global1@child : $global1"
+echo "  global2@child : $global2"
+
+global1="tamanegi"
+global2="mitsuba"
+
+if [ -f "$temp_file" ]; then
+    for variable in global1 global2; do
+        eval echo $variable=¥'¥$$variable¥'
+    done
+fi
+
+echo "end $0"
+```
