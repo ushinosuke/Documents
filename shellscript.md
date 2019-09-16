@@ -299,3 +299,16 @@ while [ $i -lt $lsDay ]; do
 done
 ```
 
+#### Recipe2.7 連想配列を使う
+bashにも連想配列はないが、先ほどと同様に`eval`コマンドを駆使することで、連想配列もどきを作れる。ポイントはキーを定義する際に「スペース」を入れること！
+```shell
+hnCalorie=" "
+eval hnCalorie_zarusoba=¥"300¥"; hnCalorie="${hnCalorie}zarusoba " # スペースを入れること
+eval hnCalorie_doria=¥"700¥"   ; hnCalorie="${hnCalorie}doria " # スペースを入れること
+eval hnCalorie_unadon=¥"650¥"  ; hnCalorie="${hnCalorie}unadon " #スペースを入れること
+
+for key in $hnCalorie; do
+    eval echo "$key : ¥$hnCalorie_$key"
+done
+```
+
