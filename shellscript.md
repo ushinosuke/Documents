@@ -238,7 +238,8 @@ echo "end $0"
 ```
 
 #### Recipe2.5 子プロセスから親プロセスへ変数を渡す
-`export`コマンドを使っても子プロセスから親プロセスに変数を渡すことはできない。そこで、ファイルを介して渡すようにする。
+`export`コマンドを使っても子プロセスから親プロセスに変数を渡すことはできない。そこで、ファイルを介して渡すようにする。`eval`コマンドを使うのもポイント。`"`や`$`を記述するときには、`¥`でエスケープする必要があることに注意。
+
 * 親スクリプト
 ```shell
 global1="sato"
@@ -279,3 +280,22 @@ fi
 
 echo "end $0"
 ```
+
+#### Recipe2.6 配列を使う
+bashには配列変数があるが、Bシェルにはない。だが`eval`コマンドを活用すれば、配列っぽいものを無理やり定義することができる。シェルスクリプトではさておき、一行野郎で配列を使うことは勧められないが、一応紹介しておく。
+```shell
+lsDay=0
+eval lsDay_$lsDay=¥"Monday¥"   ; lsDay=`expr $lsDay + 1`
+eval lsDay_$lsDay=¥"Tuesday¥"  ; lsDay=`expr $lsDay + 1`
+eval lsDay_$lsDay=¥"Wednesday¥"; lsDay=`expr $lsDay + 1`
+eval lsDay_$lsday=¥"Thursday¥" ; lsDay=`expr $lsDay + 1`
+eval lsDay_$lsDay=¥"Friday¥"   ; lsDay=`expr $lsDay + 1`
+eval lsDay_$lsDay=¥"Saturday¥" ; lsDay=`expr $lsDay + 1`
+
+i=0
+while [ $i -lt $lsDay ]; do
+    eval echo ¥$lsDay_$i
+    i=`expr $i + 1`
+done
+```
+
