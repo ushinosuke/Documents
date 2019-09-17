@@ -324,3 +324,11 @@ x="(-($b)+sqrt(($b)^2-4*($a)*($c)))/(2*($a))"
 awk 'BEGIN{print $x}'
 ```
 
+#### Recipe3.2 四捨五入
+`printf`関数の丸め機能は信用してはいけない。ちゃんと0.5を足して`int`関数で整数化する。
+```shell
+value=1.3
+rounded_value=`awk "BEGIN{print int($value+0.5)}"` # ダブルクォート！
+echo "The answer is ¥"$rounded_value¥"."
+```
+上のスクリプトで、`BEGIN`ブロックがダブルクォートで囲まれていることに注意。ブロック内でシェル変数が使われているため、ダブルクォートにしておかないと展開されない。
