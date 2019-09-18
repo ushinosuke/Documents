@@ -355,3 +355,27 @@ cat /dev/urandom|od -DA n|head -1|tr -dc 0-9|cut -c -5|awk '$0=int($0*6/10^5)+1'
 jot -r 1 1 6
 ```
 
+#### Recipe3.4 10進数から8進数・16進数への変換および逆変換
+`printf`コマンドを使えばすべてが解決する。`printf`万歳。
+* 16進 --> 10進
+```shell
+hex=0x41
+printf "%d¥n" $hex
+```
+* 8進 -> 10進
+```shell
+oct=0123
+printf "%d¥n" $oct
+```
+* 10進 -> 16進
+```shell
+dec=65
+printf "0x%x¥n" $dec
+# printf "0x%X¥n" $dec
+```
+* 8進 -> 10進
+```shell
+dec=65
+printf "0%o¥n" $dec
+```
+
