@@ -442,4 +442,16 @@ LANG=C; echo ${#string}　# 返り値は9（3バイトが3字分）
 ```
 
 #### Recipe4.2 文字列の一部を抽出する
+`cut`で頑張る。文字数をカウントする場合は`-c`オプション、バイト数のカウントは`-b`オプションを使う。
+```shell
+string="KabayakiUnagiSanshou"
+left_word=`echo "$string"|cut -c -8`
+middle_word=`echo "$string"|cut -c 9-13`
+right_word=$(echo "$string"|cut -c `expr ${#string} - 7 + 1` -)
+```
+
+#### Recipe4.3 大文字 <=> 小文字変換
+```shell
+
+```
 
