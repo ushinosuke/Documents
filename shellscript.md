@@ -451,7 +451,24 @@ right_word=$(echo "$string"|cut -c `expr ${#string} - 7 + 1` -)
 ```
 
 #### Recipe4.3 大文字 <=> 小文字変換
+定番の`tr`コマンドを使う方法、変数展開を活用する方法、そしてAWKer流を紹介する。
+* `tr`コマンドを使う場合
 ```shell
-
+mycat="Debunesu"
+echo "$mycat"|tr 'a-z' 'A-Z'　# 大文字化
+echo "$mycat"|tr 'A-Z' 'a-z'　# 小文字化
+```
+* 変数展開を使う場合（注：`bash`バージョン4以降）
+```shell
+mycat="Debunesu"
+echo ${mycat^^}　# 大文字化
+echo ${mycat,,}　# 小文字化
+```
+* AWKer流
+```shell
+mycat="Debunesu"
+echo "$mycat"|awk '$0=toupper($0)'　# 大文字化
+echo "$mycat"|awk '$0=tolower($0)'　# 小文字化
 ```
 
+#### Recipe4.4 ASCIIコード <=> キャラクタ変換
