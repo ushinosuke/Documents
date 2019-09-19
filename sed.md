@@ -7,7 +7,7 @@
 	2. 各命令の前に`-e`オプションをつける
 		`cat list|sed -e 's/ MA/, Massachusetts/' -e 's/ PA/, Pennsylvania/'`
 	3. マルチライン入力する　注）cshでは使えない 
-		```
+		```shell
 		cat list|sed '
 		    s/ MA/, Massachusetts/
 		    s/ PA/, Pennsylvania/
@@ -17,7 +17,7 @@
 	4. 処理をファイルに書いて読み込む
 		`cat list|sed -f sedsrc`
 		ファイルの中身はこちら。
-		```
+		```shell
 		cat sedsrc
 		> s/ MA/, Massachusetts/
 		> s/ PA/, Pennsylvania/
@@ -59,4 +59,8 @@
 	2. `echo {a..e}|xargs -n 1|awk 'NR!=2'`
 	* 最終行を消去
 	`echo {a..e}|xargs -n 1|sed '$d'`
+* ファイルの先頭行に追記する
+```shell
+cat tmp.txt|sed '1s/^/debunesu¥n/'
+```
 
