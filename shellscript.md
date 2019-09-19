@@ -380,7 +380,8 @@ printf "0%o¥n" $dec
 ```
 
 #### Recie3.5 10進数から2進数への変換および逆変換
-`printf`コマンドには2進数はサポートされていない。代わりに`bc`コマンドを使う。`ibase`（入力）と`obase`（出力）に基数を指定することで、あらゆる基数の変換ができる。
+`printf`コマンドには2進数がサポートされていない。したがって、代わりに`bc`コマンドを使う。`ibase`（入力）と`obase`（出力）に基数を指定することで、あらゆる基数間の変換ができる。
+
 * 2進 -> 10進
 ```shell
 bin=1000001
@@ -391,3 +392,38 @@ dec=`echo "ibase=2;$bin"|bc`
 dec=65
 bin=`echo "obase=2;$dec"|bc`
 ```
+
+#### Recipe3.6 数字として扱える文字列かどうか判定する
+引数が10進数、16進数、8進数、2進数であるかどうかを確認するには、以下の様にすればよい。
+* 10進数かどうかの判定
+```shell
+if [ -z "`echo "$1"|grep '^[0-9]¥+$'`" ]; then
+    echo "Invalid number!"
+    exit 1
+fi
+```
+* 16進数かどうかの判定
+```shell
+if [ -z "`echo "$1"|grep '^0x[0-9a-fA-F]¥+$'`" ]; then
+    echo "Invalid number!"
+    exit 1
+fi
+```
+* 8進数かどうかの判定
+```shell
+if [ -z "`echo "$1"|grep '^0[1-7]*$'`" ]; then
+    echo "Invalid number!"
+    exit 1
+fi
+```
+* 2進数かどうかの判定
+```shell
+if [ -z "`echo "$1"|grep '^[01]¥+$'`" ]; then
+    echo "Invalid number!"
+    exit 1
+fi
+```
+
+---
+
+### 文字列操作
