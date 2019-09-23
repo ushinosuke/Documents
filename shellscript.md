@@ -483,3 +483,22 @@ echo "$mycat"|awk '$0=tolower($0)'　# 小文字化
 ```
 
 #### Recipe4.4 ASCIIコード <=> キャラクタ変換
+* ASCIIコード-キャラクタ変換
+まずはASCIIコードをスラッシュ付き8進数（3桁）で表現する。それを`printf`コマンドに渡せば解決。ただし改行コード`LF`が自動的に取り去られてしまう問題を回避するために、任意の1文字をつけてすぐに消去するプロセスが入る。
+```shell
+ascii_code="$1"
+bsla_oct=`printf "¥134%03o" $ascii_code`　# ¥134はスラッシュ
+char=`printf "${bsla_oct}_"`
+char="${char%_}"
+echo "$char"
+```
+* キャラクタ-ASCIIコード変換
+`od`コマンドでダンプすればよい。アドレス部を無視するために`AWK`で該当部のみを抽出している。
+```shell
+char="$1"
+ascii_code=`echo -n "$char"|od -t uC|awk '$0=$2'`
+[ -z "$ascii_code" ] && ascii_code=0
+echo "$ascii_code"
+```
+
+#### Recipe4.5 正規表現でマッチした文字列の抽出
