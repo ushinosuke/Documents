@@ -517,3 +517,18 @@ echo "STRING"|grep -o 'PATTERN'
 ```
 
 #### Recipe4.6 特定文字のトリミング
+シェル変数は`#`と`%`を駆使すれば、それぞれ左端・右端からトリミングができる。より具体的には`${var#パターン}`で`var`の左端から、`${var%パターン}`で`var`の右端からパターンにマッチした場合に限り、トリミングが行われる。
+```shell
+string="---debunesu-gorin-uchan---"
+trimming_chr="-"
+
+while [ "_$string" != "_${string#[$trimming_chr]}" ]; do
+    string=${string#[$trimming_chr]}
+done
+while [ "_$string" != "_${string%[$trimming_chr]}" ]; do
+    string=${string%[$trimming_chr]}
+done
+
+echo "$string"
+```
+
