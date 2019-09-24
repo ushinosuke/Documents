@@ -166,7 +166,7 @@ echo $pi
 `echo -e '1 2 sum¥n3 4 avg'|awk '{print ($NF=="sum")?$1+$2:($1+$2)/2}'`
 ```shell
 {
-    var="$NF";
+    var=$NF;
     print @var($1,$2);
 }
 
