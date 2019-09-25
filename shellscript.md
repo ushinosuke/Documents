@@ -550,3 +550,14 @@ dirpath=`dirname "$filepath"`
 ```
 
 #### Recipe4.8 ランダムな文字列の生成
+既に登場した乱数の生成やASCII<=>キャラクタ変換のテクニックを活用すれば、ランダムな文字列を生成できる。しかし、「あるものは利用する」というシェルスクリプトの精神に基づき、`mktemp`コマンドを活用した」レシピを以下に紹介する。
+```shell
+RAND=`mktemp /tmp/temp.XXXXXX`
+if [ $? -eq 0 ]; then
+    rm $RAND ; RAND=${RAND#/tmp/temp.}
+fi
+```
+
+---
+
+### フィールド・ライン処理
