@@ -532,3 +532,21 @@ done
 echo "$string"
 ```
 
+#### Recipe4.7 パス名中のファイル名・ディレクトリ名を抽出する
+シェル変数のトリミング機能を利用する方法とコマンドを使う方法がある。
+1. トリミング機能の利用
+前項で`#`は左側からのマッチングを行うことを紹介した。さらに#をもう一つ加えて`##`とすると、最大マッチングを行う。パターンに`*/`を指定すれば目的が達せられる。
+```shell
+filepath="/food/Nihon/yoshoku/hayashirice.txt"
+
+filename="${filepath##*/}"
+dirpath="${filepath%/*}"
+```
+2. コマンドの利用
+`basename`コマンドと`dirname`コマンドを使えばすぐにできる。
+```shell
+filename=`basename "$filepath"`
+dirpath=`dirname "$filepath"`
+```
+
+#### Recipe4.8 ランダムな文字列の生成
