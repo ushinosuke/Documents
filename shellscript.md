@@ -608,3 +608,20 @@ fi
 ```
 
 #### Recipe5.4 1行ごとに処理をする
+例として、全プロセスのプロセスIDとコマンドを列挙するスクリプトを考える。いくつかの方法を記すが、それぞれ一長一短がある。
+1. その1
+```shell
+number=0
+ps ax -o "pid ucomm" | while read line; do
+    pid=`echo "$line" | awk "{print ¥¥$1}"`
+    [ -n "`echo "$pid" | grep "[^0-9]"`" ] && continue
+    number=`expr $number + 1`
+    command=`echo "$line" | awk "{print ¥¥$2}"`
+    
+    printf "#%-3d : pid=%d is %s¥n" $number $pid "$command"
+done
+
+echo "The number of processes is ${number}."  # 失敗する。while文中は子プロセスの様なもの！
+```
+このスクリプトでは、プロセス数を正しくカウントできない。原因は`while`文におけるカウンタの扱われ方だ。`while`文の中は「子プロセス」の様な扱いになる。従って、**`while`節の外から中には渡せても、中から外へは変数を渡すことができない！**
+2. その2
