@@ -624,4 +624,24 @@ done
 echo "The number of processes is ${number}."  # 失敗する。while文中は子プロセスの様なもの！
 ```
 このスクリプトでは、プロセス数を正しくカウントできない。原因は`while`文におけるカウンタの扱われ方だ。`while`文の中は「子プロセス」の様な扱いになる。従って、**`while`節の外から中には渡せても、中から外へは変数を渡すことができない！**
-2. その2
+2. その2：　テンポラリ・ファイルを利用する
+```shell
+number=0
+
+temp_file=`mktemp /tmp/proclist.XXXXXX`
+ps ax -o "pid ucomm" > $temp_file
+exec 3<&0 < $temp_file
+while read line; do　　　　　　　　　　　　　　　　　　　　　　　　　# ここでパイプを使っていない！
+    pid=`echo "$line" | awk "{print ¥¥$1}"`
+    [ -n "`echo "$line" | grep "[^0-9]"`" ] && continue
+    number=`expr $number + 1`
+    command=`echo "$line" | awk "{print ¥¥$2}"`
+    printf "#%-3d : pid=%d is %s¥n" $number $pid "$command"
+done
+
+exec 0<&3 3<&-
+[ -f "$temp_file" ] && rm -f $temp_file
+
+echo "The number of processes is ${number}."
+```
+上で`while`文の中は「子プロセス」の様に振る舞うと書いたが、**パイプ`|`を使わない場合は`while`節の外に変数を出すことができる。**パイプを使わない様にするために、このレシピでは`exec`コマンドを駆使してファイル・ポートをコピー、改造している。ポートは通常、3番から9番までは未使用状態で存在している。
