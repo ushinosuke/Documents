@@ -609,7 +609,7 @@ fi
 
 #### Recipe5.4 1行ごとに処理をする
 例として、全プロセスのプロセスIDとコマンドを列挙するスクリプトを考える。いくつかの方法を記すが、それぞれ一長一短がある。
-1. その1
+1. その１
 ```shell
 number=0
 ps ax -o "pid ucomm" | while read line; do
@@ -624,7 +624,7 @@ done
 echo "The number of processes is ${number}."  # 失敗する。while文中は子プロセスの様なもの！
 ```
 このスクリプトでは、プロセス数を正しくカウントできない。原因は`while`文におけるカウンタの扱われ方だ。`while`文の中は「子プロセス」の様な扱いになる。従って、**`while`節の外から中には渡せても、中から外へは変数を渡すことができない！**
-2. その2：　テンポラリ・ファイルを利用する
+2. その２：　テンポラリ・ファイルを利用する
 ```shell
 number=0
 
@@ -644,4 +644,51 @@ exec 0<&3 3<&-
 
 echo "The number of processes is ${number}."
 ```
-上で`while`文の中は「子プロセス」の様に振る舞うと書いたが、**パイプ`|`を使わない場合は`while`節の外に変数を出すことができる。**パイプを使わない様にするために、このレシピでは`exec`コマンドを駆使してファイル・ポートをコピー、改造している。ポートは通常、3番から9番までは未使用状態で存在している。
+上で`while`文の中は「子プロセス」の様に振る舞うと書いたが、**パイプ`|`を使わない場合は`while`節の外に変数を出すことができる。** パイプを使わない様にするために、このレシピでは`exec`コマンドを駆使してファイル・ポートをコピー、改造している。ポートは通常、3番から9番までは未使用状態で存在している。本レシピの欠点は、テンポラリ・ファイルを作れない環境には適用できないことにある。
+
+3. その３：　環境変数`IFS`を改変して`for`文を利用する
+`for`文で行単位の処理ができない理由は、同じ行中に **タブ** や **スペース** があると`for`文がそこで切ってしまうことにある。区切りの基準が環境変数`IFS`（Input Field Separator）として設定されている。デフォルトでは`IFS`は**タブ・スペース・改行**となっている。従って以下のコマンドを実行すると、期待通りの結果を得ることができない。
+```shell
+> for line in `echo -e "aaa bbb ccc¥nddd eee fff"`; do echo $line; done
+> aaa
+> bbb
+> ccc
+> ddd
+> eee
+> fff
+```
+
+そこで`for`文を使う場合は、`IFS`を再定義すればよい。上の例の場合、次の様に設定する。
+```shell
+> IFS_BACKUP=$IFS
+> IFS=`printf '¥012_'` ; echo ${IFS%_}　　　# IFSに改行を設定
+
+> for line in `echo -e "aaa bbb ccc¥nddd eee fff"`; do echo $line; done
+> aaa bbb ccc
+> ddd eee fff
+
+> IFS=$IFS_BACKUP
+> unset IFS_BACKUP　　　　　　　　　　　　　　　# IFS_BACKUPを未定義化
+```
+以上の内容を踏まえると、３つ目の処方箋は以下の様に書ける。
+```shell
+IFS_BACKUP=$IFS
+IFS=`printf '¥012_'` ; IFS=${IFS%_}
+
+number=0
+for line in `ps ax "pid ucomm"`
+do
+    pid=`echo "$line" | awk "{print ¥¥$1}"`
+    [ -n "`echo "$pid" | grep "[^0-9]"`" ] && continue
+    number=`expr $number + 1`
+    command=`echo "$line" | awk "{print ¥¥$2}"`
+    
+    printf "#%-3d : pid=%d is %s¥n" $number $pid "$command"
+done
+
+IFS=$IFS_BACKUP
+unset IFS_BACKUP
+
+echo "The number of processes is ${number}."
+```
+4. その４：　
