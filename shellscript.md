@@ -691,4 +691,26 @@ unset IFS_BACKUP
 
 echo "The number of processes is ${number}."
 ```
-4. その４：　
+4. その４：　空白・タブを無理やり置換することで`for`文を使う
+環境変数`IFS`のデフォルト値が空白・タブ・改行であることが、`for`文ではうまく行かない理由であった。従って、空白・タブを差し障りない任意の文字に置換してやればよいだろう。ASCIIコードの0番から31番に割り当てられているコントロールコードは、通常はテキスト・ファイルには用いられない。これを利用して、以下のレシピができる。
+```shell
+number=0
+for line in `ps ax -o "pid ucomm"    | &
+             sed -e 's/¥(.*¥)/¥1_/'  | &
+             tr ' ¥t' '¥006¥025'`
+do
+    line=`echo "$line" | tr '¥006¥025' ' ¥t'`
+    line=${line%_}
+    pid=`echo "$line" | awk "{print ¥¥1}"`
+    [ -n "`echo $pid | grep "[^0-9]"`" ] && continue
+    number=`expr $number + 1`
+    command=`echo "$line" | awk "{print ¥¥$2}"`
+    
+    printf "#%-3d : pid=%d is %s¥n" $number $pid "$command"
+done
+
+echo "The number of processes is ${processes}."
+```
+ここで、各行の末尾にアンダー・スコアを入れているのは、空行対策である。
+
+#### Recipe.5.6 ソートする
