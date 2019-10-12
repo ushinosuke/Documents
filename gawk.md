@@ -180,3 +180,29 @@ function avg(n1,n2){
 ```
 `echo -e '1 2 sum¥n3 4 avg'|awk -f tmp.awk`
 
+---
+
+### 基本（ `AWK`に限らない ）
+
+#### `printf`文
+以下のファイルを例に説明する。
+```shell
+cat emp.data
+> Beth 4.00 0
+> Dan 3.75 0
+> Kathy 4.00 10
+> Mark 5.00 20
+> Mary 5.50 22
+> Susie 4.25 18
+```
+* 文字列出力を左詰めする：`%-8s`
+```shell
+awk '{printf("%-8s $%6.2f¥n", $1, $2*$3)}' emp.data
+>Beth     $  0.00
+>Dan      $  0.00
+>Kathy    $ 40.00
+>Mark     $100.00
+>Mary     $121.00
+>Susie    $ 76.50
+```
+
