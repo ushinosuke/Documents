@@ -709,8 +709,19 @@ do
     printf "#%-3d : pid=%d is %s¥n" $number $pid "$command"
 done
 
-echo "The number of processes is ${processes}."
+echo "The number of processes is ${number}."
 ```
 ここで、各行の末尾にアンダー・スコアを入れているのは、空行対策である。
 
 #### Recipe.5.6 ソートする
+常套手段である`sort`コマンドを使う。`sort`は「アルファベット順に昇順・スペース区切り」がデフォルトの設定になっている。変更するためには`-t`（フィールド区切り文字）や`-k`オプション（キー）を使う。次の様なソートを考える。
+1. 第2フィールドを、アルファベット順に、昇順
+2. 第1フィールドを、アルファベット順に、降順
+3. 第3フィールドを、数値順に、降順
+4. 区切り文字はカンマ
+```shell
+echo -e 'aa,aa,2¥naa,aa,3¥naa,ab,3¥nab,aa,2¥naa,aa,10' | 
+sort -t "," -k2,2 -k1r,1 -k3nr,3
+```
+
+#### Recipe5.7 CSV形式データ処理
