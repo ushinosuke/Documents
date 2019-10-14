@@ -1,4 +1,4 @@
-## AWK & GNU awk
+## AWK & GNU awk ときどき sed
 
 ### 重要コマンド
 * 表示範囲の指定（行）
@@ -7,8 +7,19 @@
 		top -l 1|awk 'NR==1,/^$/'
 		top -l 1|awk 'NR==1,!NF'
 		```
+		`sed`だと次の様に書ける。
+		```shell
+		top -l 1 | sed '1,/^$/p' -n
+		```
 	* 空行から行末までを標準出力
-		`top -l 1|awk '/^$/,0'`
+		````shell
+		top -l 1|awk '/^$/,0'
+		````
+		`sed`だと・・・
+		
+		```shell
+		top -l 1 | sed '/^$/,$p' -n
+		```
 * `bc`コマンド代替： `echo {1..5}|tr ' ' '+'|bc`
 `echo {1..5}|awk '{for(i=1;i<=NF;i++)sum+=$i;print sum}'`
 * フィールドの再構築
