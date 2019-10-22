@@ -64,3 +64,11 @@
 cat tmp.txt|sed '1s/^/debunesu¥n/'
 ```
 
+---
+
+### おまけ
+`echo {a..e}|xargs -n 1`は`sed`を使って、次の様に書くこともできる。
+```shell
+echo {a..e} | sed 's/ /¥n/g'
+```
+
